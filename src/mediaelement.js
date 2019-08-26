@@ -20,7 +20,7 @@ export default class MediaElement extends WebAudio {
         this.media = {
             currentTime: 0,
             duration: 0,
-            paused: true,
+            paused: true && !params.mediaReadyBeforeWavesurferInstantiated,
             playbackRate: 1,
             play() {},
             pause() {},
@@ -126,14 +126,6 @@ export default class MediaElement extends WebAudio {
      * @private
      */
     _load(media, peaks) {
-        // load must be called manually on iOS, otherwise peaks won't draw
-        // until a user interaction triggers load --> 'ready' event
-        if (typeof media.load == 'function') {
-            // Resets the media element and restarts the media resource. Any
-            // pending events are discarded. How much media data is fetched is
-            // still affected by the preload attribute.
-            media.load();
-        }
 
         media.addEventListener('error', () => {
             this.fireEvent('error', 'Error loading media element');
@@ -170,6 +162,24 @@ export default class MediaElement extends WebAudio {
             }
             this.fireEvent('volume');
         });
+
+        // load must be called manually on iOS, otherwise peaks won't draw
+        // until a user interaction triggers load --> 'ready' event
+        if (this.params.mediaReadyBeforeWavesurferInstantiated) {
+            this.fireEvent('canplay');
+            if (media.paused) {
+                this.fireEvent('pause');
+            } else {
+                this.fireEvent('play');
+            }
+        } else {
+            if (typeof media.load == 'function') {
+                // Resets the media element and restarts the media resource. Any
+                // pending events are discarded. How much media data is fetched is
+                // still affected by the preload attribute.
+                media.load();
+            }
+        }
 
         this.media = media;
         this.peaks = peaks;
@@ -378,7 +388,10 @@ export default class MediaElement extends WebAudio {
      *
      */
     destroy() {
-        this.pause();
+        if (this.params.pauseMediaElementOnDestroy) {
+            this.pause();
+        }
+
         this.unAll();
 
         if (

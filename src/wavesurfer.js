@@ -222,10 +222,12 @@ export default class WaveSurfer extends util.Observer {
         maxCanvasWidth: 4000,
         mediaContainer: null,
         mediaControls: false,
+        mediaReadyBeforeWavesurferInstantiated: false,
         mediaType: 'audio',
         minPxPerSec: 20,
         normalize: false,
         partialRender: false,
+        pauseMediaElementOnDestroy: true,
         pixelRatio:
             window.devicePixelRatio || screen.deviceXDPI / screen.logicalXDPI,
         plugins: [],
@@ -1283,7 +1285,9 @@ export default class WaveSurfer extends util.Observer {
      * );
      */
     load(url, peaks, preload, duration) {
-        this.empty();
+        if (!this.params.mediaReadyBeforeWavesurferInstantiated) {
+            this.empty();
+        }
 
         if (preload) {
             // check whether the preload attribute will be usable and if not log
@@ -1359,17 +1363,6 @@ export default class WaveSurfer extends util.Observer {
     loadMediaElement(urlOrElt, peaks, preload, duration) {
         let url = urlOrElt;
 
-        if (typeof urlOrElt === 'string') {
-            this.backend.load(url, this.mediaContainer, peaks, preload);
-        } else {
-            const elt = urlOrElt;
-            this.backend.loadElt(elt, peaks);
-
-            // If peaks are not provided,
-            // url = element.src so we can get peaks with web audio
-            url = elt.src;
-        }
-
         this.tmpEvents.push(
             this.backend.once('canplay', () => {
                 this.drawBuffer();
@@ -1384,6 +1377,17 @@ export default class WaveSurfer extends util.Observer {
         // audio file and decode it with Web Audio.
         if (peaks) {
             this.backend.setPeaks(peaks, duration);
+        }
+
+        if (typeof urlOrElt === 'string') {
+            this.backend.load(url, this.mediaContainer, peaks, preload);
+        } else {
+            const elt = urlOrElt;
+            this.backend.loadElt(elt, peaks);
+
+            // If peaks are not provided,
+            // url = element.src so we can get peaks with web audio
+            url = elt.src;
         }
 
         if (

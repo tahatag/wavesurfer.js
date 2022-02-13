@@ -1,5 +1,5 @@
 {
-  "name": "wavesurfer.js",
+  "name": "@tahatag/wavesurfer.js",
   "version": "3.0.0",
   "description": "Interactive navigable audio visualization using Web Audio and Canvas",
   "main": "dist/wavesurfer.min.js",
@@ -94,7 +94,7 @@
     "webpack-dev-server": "^3.7.2",
     "webpack-merge": "^4.2.1"
   },
-  "homepage": "https://github.com/katspaugh/wavesurfer.js",
+  "homepage": "https://github.com/tahatag/wavesurfer.js",
   "pre-commit": "lint-and-format-staged",
   "lint-staged": {
     "*.js": [

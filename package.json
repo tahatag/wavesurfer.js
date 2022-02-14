@@ -1,6 +1,6 @@
 {
   "name": "@tahatag/wavesurfer.js",
-  "version": "3.0.0",
+  "version": "3.0.3",
   "description": "Interactive navigable audio visualization using Web Audio and Canvas",
   "main": "dist/wavesurfer.min.js",
   "directories": {
@@ -35,12 +35,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/katspaugh/wavesurfer.js.git"
+    "url": "git://github.com/tahatag/wavesurfer.js.git"
   },
   "author": "",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/katspaugh/wavesurfer.js/issues"
+    "url": "https://github.com/tahatag/wavesurfer.js/issues"
   },
   "keywords": [
     "waveform",

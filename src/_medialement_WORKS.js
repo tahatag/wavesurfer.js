@@ -20,7 +20,7 @@ export default class MediaElement extends WebAudio {
         this.media = {
             currentTime: 0,
             duration: 0,
-            paused: true && !params.mediaReadyBeforeWavesurferInstantiated,
+            paused: false, //MIHRAN
             playbackRate: 1,
             play() {},
             pause() {},
@@ -113,8 +113,9 @@ export default class MediaElement extends WebAudio {
     loadElt(elt, peaks) {
         elt.controls = this.params.mediaControls;
         elt.autoplay = this.params.autoplay || false;
-
+        // console.log('line 116 in mediaElement.js', elt, elt.src);
         this._load(elt, peaks);
+        // console.log('line 118 in mediaElement.js', elt, elt.src);
     }
 
     /**
@@ -164,23 +165,32 @@ export default class MediaElement extends WebAudio {
 
         // load must be called manually on iOS, otherwise peaks won't draw
         // until a user interaction triggers load --> 'ready' event
-        if (this.params.mediaReadyBeforeWavesurferInstantiated) {
+        if (typeof media.load == 'function') {
+            // Resets the media element and restarts the media resource. Any
+            // pending events are discarded. How much media data is fetched is
+            // still affected by the preload attribute.
+            // if (media.readyState < 4) {
+            // console.log('line 137 in mediaElement.js', media, media.networkState, media.currentSrc, media.src);
+            // media.load(); // THIS CLEARS media.src on Firefox / safari !
+            // if (!media.paused) {
+            //     this.fireEvent('play');
+            // }
+            // console.log('line 139 in mediaElement.js', media, media.networkState, media.currentSrc, media.src);
+            // console.log('line 140 in mediaElement.js', media.firstChild, media.firstChild.src);
+
+            // } else {
+            // console.log('media.load() prevented');
             this.fireEvent('canplay');
             if (media.paused) {
                 this.fireEvent('pause');
             } else {
                 this.fireEvent('play');
             }
-        } else {
-            if (typeof media.load == 'function') {
-                // Resets the media element and restarts the media resource. Any
-                // pending events are discarded. How much media data is fetched is
-                // still affected by the preload attribute.
-                media.load();
-            }
+            // }
         }
 
         this.media = media;
+        // console.log('line 184 in mediaElement.js', media, media.src, this.media, this.media.src);
         this.peaks = peaks;
         this.onPlayEnd = null;
         this.buffer = null;
@@ -387,10 +397,8 @@ export default class MediaElement extends WebAudio {
      *
      */
     destroy() {
-        if (this.params.pauseMediaElementOnDestroy) {
-            this.pause();
-        }
-
+        // DON'T PAUSE
+        // this.pause();
         this.unAll();
 
         if (
